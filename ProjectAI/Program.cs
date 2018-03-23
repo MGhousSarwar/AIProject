@@ -67,6 +67,5 @@ namespace ProjectAI
         public string Email { get; set; }
         public string Gender { get; set; }
         public string Dp { get; set; }
-        public int MyProperty { get; set; }
     }
 }
