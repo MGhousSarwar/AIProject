@@ -5,26 +5,41 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using Newtonsoft.Json;
-
+using System.Threading;
+using System.ComponentModel;
 
 namespace ProjectAI
 {
     class Program
     {
+        private const string url = "http://96.74.130.169:19486/api/";
+        private static List<RootObject> rootObject;
         //
         static void Main(string[] args)
         {
             while (true)
             {
-                Console.WriteLine("Paste Link and press enter");
-                string url = "http://96.74.130.169:19486/" + Console.ReadLine();
-                List<RootObject> rootObject = _download_serialized_json_data_list<RootObject>(url);
+                Thread.CurrentThread.IsBackground = true;
+                Console.WriteLine("Paste onlye model");
+                string s = Console.ReadLine();
+                List<RootObject> rootObject = null;
+                int c = 0;
+                new Thread(() =>
+                {
+                    Thread.CurrentThread.IsBackground = true;
+                    rootObject = _download_serialized_json_data_list<RootObject>(url + s);
+                    c = rootObject.Count;
+                }).Start();
+                Console.Write("Downloading");
+                while (c==0)
+                {
+                    Console.Write(".");
+                    Thread.Sleep(10);
+                }
+                Console.WriteLine();
                 Console.WriteLine(rootObject.Count);
             }
         }
-        //
-        // ...
-
         static List<T> _download_serialized_json_data_list<T>(string url) where T : new()
         {
             using (var w = new WebClient())
@@ -52,5 +67,6 @@ namespace ProjectAI
         public string Email { get; set; }
         public string Gender { get; set; }
         public string Dp { get; set; }
+        public int MyProperty { get; set; }
     }
 }
